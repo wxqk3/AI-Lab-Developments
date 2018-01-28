@@ -38,6 +38,7 @@ import org.researchstack.backbone.model.ConsentSignature;
 import org.researchstack.backbone.step.ConsentDocumentStep;
 import org.researchstack.backbone.step.ConsentSignatureStep;
 import org.researchstack.backbone.step.ConsentVisualStep;
+import org.researchstack.backbone.step.InstructionStep;
 import org.researchstack.backbone.step.QuestionStep;
 import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.task.OrderedTask;
@@ -46,6 +47,7 @@ import org.researchstack.backbone.ui.ViewTaskActivity;
 import org.researchstack.backbone.ui.step.layout.ConsentSignatureStepLayout;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -53,6 +55,8 @@ import static android.Manifest.permission.RECORD_AUDIO;
 public class MainActivity extends AppCompatActivity {
 
   private static final int REQUEST_CONSENT = 0;
+  private static final int REQUEST_SURVEY  = 1;
+  private static final int REQUEST_AUDIO = 2;
   private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
   private boolean mPermissionToRecordAccepted = false;
@@ -121,9 +125,63 @@ public class MainActivity extends AppCompatActivity {
 
   private void displaySurvey() {
 
+    List<Step> steps = new ArrayList<>();
+
+    InstructionStep instructionStep = new InstructionStep("audio_instruction_step",
+            "A sentence prompt will be given to you to read.",
+            "These are the last dying words of Joseph of Aramathea.");
+    steps.add(instructionStep);
+
+    TextAnswerFormat format = new TextAnswerFormat(20);
+
+    QuestionStep nameStep = new QuestionStep("name", "What is your name?", format);
+    nameStep.setPlaceholder("Name");
+    nameStep.setOptional(false);
+    steps.add(nameStep);
+
+    ImageQuestionStep imageStep = new ImageQuestionStep("Image_step");
+    imageStep.setTitle("Recognize the picture");
+    imageStep.setDuration(10);
+    steps.add(imageStep);
+
+    InstructionStep summaryStep = new InstructionStep("audio_summary_step",
+            "Right. Off you go!",
+            "That was easy!");
+    steps.add(summaryStep);
+
+    OrderedTask task = new OrderedTask("image_task", steps);
+
+    Intent intent = ViewTaskActivity.newIntent(this, task);
+
+    startActivityForResult(intent, REQUEST_AUDIO);
+
+
   }
 
   private void displayAudioTask() {
+    List<Step> steps = new ArrayList<>();
+    InstructionStep instructionStep = new InstructionStep("audio_instruction_step",
+            "A sentence prompt will be given to you to read.",
+            "These are the last dying words of Joseph of Aramathea.");
+    steps.add(instructionStep);
+
+    AudioStep audioStep = new AudioStep("audio_step");
+    audioStep.setTitle("Repeat the following phrase:");
+    audioStep.setText("The Holy Grail can be found in the Castle of Aaaaaaaaaaah");
+    audioStep.setDuration(10);
+    steps.add(audioStep);
+
+    InstructionStep summaryStep = new InstructionStep("audio_summary_step",
+            "Right. Off you go!",
+            "That was easy!");
+    steps.add(summaryStep);
+
+    OrderedTask task = new OrderedTask("audio_task", steps);
+
+    Intent intent = ViewTaskActivity.newIntent(this, task);
+    startActivityForResult(intent, REQUEST_AUDIO);
+
+
 
   }
 
