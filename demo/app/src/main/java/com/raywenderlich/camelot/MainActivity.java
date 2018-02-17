@@ -135,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
 
   private void displaySurvey() {
 
+    FirebaseAdaptor fba = new FirebaseAdaptor();
+
+
     List<Step> steps = new ArrayList<>();
 
     InstructionStep instructionStep = new InstructionStep("audio_instruction_step",
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
     ImageQuestionStep imageStep = new ImageQuestionStep("Image_step");
     imageStep.setTitle("Recognize the picture");
     imageStep.setDuration(10);
+    imageStep.setImage(fba.getFile());
     steps.add(imageStep);
 
     AnswerFormat questionFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle

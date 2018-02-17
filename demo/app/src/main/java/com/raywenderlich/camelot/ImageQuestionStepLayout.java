@@ -26,7 +26,6 @@ import org.w3c.dom.Text;
 import java.io.File;
 import java.io.IOException;
 
-import static com.raywenderlich.camelot.FirebaseAdaptor.uploadTimeStamp;
 import static com.raywenderlich.camelot.R.*;
 
 /**
@@ -42,6 +41,7 @@ public class ImageQuestionStepLayout extends RelativeLayout implements StepLayou
     private StepResult<String> mResult;
     private boolean mIsRecordingComplete = false;
     private String mFilename;
+    private File imageFile;
 
     public ImageQuestionStepLayout(Context context)
     {
@@ -125,12 +125,14 @@ public class ImageQuestionStepLayout extends RelativeLayout implements StepLayou
         title.setText(mStep.getTitle());
 
         ImageView image = (ImageView)findViewById(id.image1);
-        Bitmap bm = BitmapFactory.decodeResource(this.getContext().getResources(), mipmap.cow);
+        imageFile = mStep.getImage();
+
+
+        System.out.println(imageFile.length());
+        Bitmap bm = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
         image.setImageBitmap(bm);
         //image show up time:
 
-
-        uploadTimeStamp();
 
         final Button button1 = (Button) findViewById(id.begin_recording);
         final Button button2 = (Button) findViewById(id.no_skip);
@@ -180,7 +182,6 @@ public class ImageQuestionStepLayout extends RelativeLayout implements StepLayou
                 if(button1.getText().equals("Yes")){
                     //if the button1's text is yes,
                     //upload timestamp here
-                    uploadTimeStamp();
                     button1.setText("Record");
                     button2.setVisibility(GONE);
                     ins.setText("Click Record button to start recording.");
@@ -209,6 +210,10 @@ public class ImageQuestionStepLayout extends RelativeLayout implements StepLayou
                             mIsRecordingComplete = true;
 
                             audioRecorder.stopRecording();;
+
+
+                            FirebaseAdaptor fb = new FirebaseAdaptor();
+                            fb.upload(mFilename);
 
                             ImageQuestionStepLayout.this.setDataToResult();
                             //mStepCallbacks.onSaveStep(StepCallbacks.ACTION_NEXT, mStep, mResult);

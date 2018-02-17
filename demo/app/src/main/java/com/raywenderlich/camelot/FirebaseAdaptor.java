@@ -1,10 +1,20 @@
 package com.raywenderlich.camelot;
 
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,23 +25,54 @@ import java.util.Date;
 
 public class FirebaseAdaptor {
     //public static String timeStamp;
-    public static int count = 0;
-    public static void uploadTimeStamp(){
-        //initial date
-        Date d = new Date();
-        String s = null;
-        DateFormat na = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        s = na.format(d);
 
+    private StorageReference mStorageRef;
 
-
-        //link firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("timeStamp");
-        count++;
-        String stringCount = String.valueOf(count);
-        //timeStamp=timeStamp+stringCount;
-        myRef.child(stringCount).setValue(s);
-
+    public FirebaseAdaptor(){
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
+
+    public File getFile(){
+
+        File localFile = null;
+        try {
+            localFile = File.createTempFile("images", "jpg");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        StorageReference riversRef = mStorageRef.child("images/profile.jpg");
+
+        riversRef.getFile(localFile);
+
+        return localFile;
+    }
+
+    public void upload(String filePath){
+
+        Uri file = Uri.fromFile(new File(filePath));
+
+        String date = new Date().toString();
+        String fileName = "recordings/test/".concat(date).concat(".3gp");
+
+        System.out.println(fileName);
+        StorageReference riversRef = mStorageRef.child(fileName);
+
+        riversRef.putFile(file)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
+                    }
+                });
+    }
+
+
 }
