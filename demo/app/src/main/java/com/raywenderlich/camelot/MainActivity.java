@@ -83,9 +83,18 @@ public class MainActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-      if(resultCode == RESULT_OK) {
+      if(requestCode == REQUEST_CONSENT && resultCode == RESULT_OK) {
+
+      }
+      else if(requestCode == REQUEST_SURVEY && resultCode == RESULT_OK){
           TaskResult taskResult = (TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT);
           uploadResult(taskResult);
+      }
+      else if (requestCode == REQUEST_AUDIO && resultCode == RESULT_OK){
+
+      }
+      else{
+
       }
 
 
@@ -141,21 +150,21 @@ public class MainActivity extends AppCompatActivity {
 
 
   private void displayConsent() {
-//// 1
-//    ConsentDocument document = createConsentDocument();
-//
-//// 2
-//    List<Step> steps = createConsentSteps(document);
-//
-//// 3
-//    Task consentTask = new OrderedTask("consent_task", steps);
-//
-//// 4
-//    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
-//    startActivityForResult(intent, REQUEST_CONSENT);
+// 1
+    ConsentDocument document = createConsentDocument();
 
-    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-    startActivity(intent);
+// 2
+    List<Step> steps = createConsentSteps(document);
+
+// 3
+    Task consentTask = new OrderedTask("consent_task", steps);
+
+// 4
+    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
+    startActivityForResult(intent, REQUEST_CONSENT);
+
+//    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//    startActivity(intent);
   }
 
   private void displaySurvey() {
@@ -402,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = ViewTaskActivity.newIntent(MainActivity.this, task);
 
-        startActivityForResult(intent, REQUEST_AUDIO);
+        startActivityForResult(intent, REQUEST_SURVEY);
 
 
       }
