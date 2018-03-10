@@ -121,6 +121,8 @@ public class ImageQuestionStepLayout extends RelativeLayout implements StepLayou
         LayoutInflater.from(getContext())
                 .inflate(layout.picture_record_time_layout, this, true);
 
+
+
         TextView title = (TextView) findViewById(id.title);
         title.setText(mStep.getTitle());
 

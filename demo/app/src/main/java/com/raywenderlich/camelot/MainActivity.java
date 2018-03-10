@@ -31,13 +31,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.answerformat.AnswerFormat;
+import org.researchstack.backbone.answerformat.BooleanAnswerFormat;
 import org.researchstack.backbone.answerformat.ChoiceAnswerFormat;
 import org.researchstack.backbone.answerformat.TextAnswerFormat;
 import org.researchstack.backbone.model.Choice;
 import org.researchstack.backbone.model.ConsentDocument;
 import org.researchstack.backbone.model.ConsentSection;
 import org.researchstack.backbone.model.ConsentSignature;
+import org.researchstack.backbone.result.StepResult;
+import org.researchstack.backbone.result.TaskResult;
 import org.researchstack.backbone.step.ConsentDocumentStep;
 import org.researchstack.backbone.step.ConsentSignatureStep;
 import org.researchstack.backbone.step.ConsentVisualStep;
@@ -50,8 +60,10 @@ import org.researchstack.backbone.ui.ViewTaskActivity;
 import org.researchstack.backbone.ui.step.layout.ConsentSignatureStepLayout;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 
@@ -64,10 +76,20 @@ public class MainActivity extends AppCompatActivity {
 
   private boolean mPermissionToRecordAccepted = false;
   private String[] mPermissions = {RECORD_AUDIO};
+  private List<Step> surveySteps;
+  private String userName = "Test";
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+      if(resultCode == RESULT_OK) {
+          TaskResult taskResult = (TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT);
+          uploadResult(taskResult);
+      }
+
+
+
   }
 
   @Override
@@ -119,18 +141,21 @@ public class MainActivity extends AppCompatActivity {
 
 
   private void displayConsent() {
-// 1
-    ConsentDocument document = createConsentDocument();
+//// 1
+//    ConsentDocument document = createConsentDocument();
+//
+//// 2
+//    List<Step> steps = createConsentSteps(document);
+//
+//// 3
+//    Task consentTask = new OrderedTask("consent_task", steps);
+//
+//// 4
+//    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
+//    startActivityForResult(intent, REQUEST_CONSENT);
 
-// 2
-    List<Step> steps = createConsentSteps(document);
-
-// 3
-    Task consentTask = new OrderedTask("consent_task", steps);
-
-// 4
-    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
-    startActivityForResult(intent, REQUEST_CONSENT);
+    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+    startActivity(intent);
   }
 
   private void displaySurvey() {
@@ -184,27 +209,14 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void displayAudioTask() {
-    List<Step> steps = new ArrayList<>();
-    InstructionStep instructionStep = new InstructionStep("audio_instruction_step",
-            "A sentence prompt will be given to you to read.",
-            "These are the last dying words of Joseph of Aramathea.");
-    steps.add(instructionStep);
+    surveySteps = new ArrayList<>();
 
-    AudioStep audioStep = new AudioStep("audio_step");
-    audioStep.setTitle("Repeat the following phrase:");
-    audioStep.setText("The Holy Grail can be found in the Castle of Aaaaaaaaaaah");
-    audioStep.setDuration(10);
-    steps.add(audioStep);
+      survey(0);
+      survey(2);
+      survey(1,true);
 
-    InstructionStep summaryStep = new InstructionStep("audio_summary_step",
-            "Right. Off you go!",
-            "That was easy!");
-    steps.add(summaryStep);
 
-    OrderedTask task = new OrderedTask("audio_task", steps);
 
-    Intent intent = ViewTaskActivity.newIntent(this, task);
-    startActivityForResult(intent, REQUEST_AUDIO);
 
 
 
@@ -301,5 +313,139 @@ public class MainActivity extends AppCompatActivity {
     }
     return steps;
   }
+
+  public void survey(int i) {
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    String number = Integer.toString(i);
+    String path = "survey/".concat(number);
+
+    DatabaseReference myRef = database.getReference(path);
+
+    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Question question = dataSnapshot.getValue(Question.class);
+
+        if (question.type.equals("yesNo")) {
+          AnswerFormat questionFormat = new BooleanAnswerFormat("Yes", "No");
+          NewQuestionStep questionStep = new NewQuestionStep(question.title, question.title, questionFormat);
+          questionStep.setOptional(true);
+          surveySteps.add(questionStep);
+        } else if (question.type.equals("oneChoice")) {
+
+          Choice[] choices = new Choice[question.choices.size()];;
+
+          for (int j = 0; j < question.choices.size(); j++) {
+            choices[j] = new Choice<>(question.choices.get(j), j);
+          }
+
+          AnswerFormat questionFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle
+                  .SingleChoice,
+                  choices);
+          NewQuestionStep questionStep = new NewQuestionStep(question.title, question.title, questionFormat);
+          questionStep.setOptional(true);
+          surveySteps.add(questionStep);
+        }
+
+      }
+
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        System.out.println("The read failed: " + databaseError.getCode());
+      }
+
+    });
+  }
+
+  public void survey(int i,boolean isFinished){
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    String number = Integer.toString(i);
+    String path = "survey/".concat(number);
+
+    DatabaseReference myRef = database.getReference(path);
+
+    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Question question = dataSnapshot.getValue(Question.class);
+
+        if(question.type.equals("yesNo")){
+          AnswerFormat questionFormat = new BooleanAnswerFormat("Yes","No");
+          NewQuestionStep questionStep = new NewQuestionStep(question.title, question.title, questionFormat);
+          questionStep.setOptional(true);
+          surveySteps.add(questionStep);
+        }
+        else if (question.type.equals("oneChoice")){
+
+          Choice[] choices = new Choice[question.choices.size()];
+
+          for (int j = 0; j < question.choices.size();j++){
+            choices[j] = new Choice<>(question.choices.get(j),j);
+          }
+
+          AnswerFormat questionFormat = new ChoiceAnswerFormat(AnswerFormat.ChoiceAnswerStyle
+                  .SingleChoice,
+                  choices);
+          NewQuestionStep questionStep = new NewQuestionStep(question.title, question.title, questionFormat);
+          questionStep.setOptional(true);
+          surveySteps.add(questionStep);
+
+
+        }
+
+        OrderedTask task = new OrderedTask("image_task", surveySteps);
+
+        Intent intent = ViewTaskActivity.newIntent(MainActivity.this, task);
+
+        startActivityForResult(intent, REQUEST_AUDIO);
+
+
+      }
+
+
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        System.out.println("The read failed: " + databaseError.getCode());
+      }
+
+    });
+  }
+
+
+    public void uploadResult(TaskResult taskResult){
+
+        String addr = "result/";
+        addr += userName + "-" + new Date().toString();
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(addr);
+
+        myRef = database.getReference(addr+"/userName");
+        myRef.setValue(userName);
+
+        int i = 0;
+
+        for(String id : taskResult.getResults().keySet())
+        {
+            myRef = database.getReference(addr+"/answer/"+Integer.toString(i)+"/questionTitle");
+            myRef.setValue(id);
+
+            StepResult stepResult = taskResult.getStepResult(id);
+            myRef = database.getReference(addr+"/answer/"+Integer.toString(i)+"/answer");
+
+            myRef.setValue(stepResult.getResult().toString());
+            i++;
+        }
+    }
+
+
+
+
 
 }

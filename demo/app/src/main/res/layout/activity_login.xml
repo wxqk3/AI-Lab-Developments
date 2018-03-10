@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#616161"
+    android:orientation="vertical">
+    <!--Big label textView-->
+    <TextView
+        style="@style/HeadingTextView"
+        android:layout_marginTop="100dp"
+        android:text="@string/app_name" />
+    <!--Username EditText-->
+    <!--必须设置这个inputType="text", 要不maxLine不起效-->
+    <EditText
+        style="@style/BaseEditText"
+        android:id="@+id/usernameEditText"
+        android:layout_marginTop="40dp"
+        android:hint="@string/login_username"
+        android:inputType="text" />
+    <!--Password EditText-->
+    <EditText
+        style="@style/BaseEditText"
+        android:id="@+id/passwordEditText"
+        android:layout_marginTop="20dp"
+        android:hint="@string/login_password"
+        android:inputType="textPassword" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+        <!--Login Button-->
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/login_login" />
+        <!--Create Account Button-->
+        <!--TODO: 完成选中以后将颜色改变功能 -->
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="#0FFF"
+            android:text="@string/login_sign_up" />
+    </LinearLayout>
+
+</LinearLayout>

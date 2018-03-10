@@ -1,3 +1,53 @@
 <resources>
-  <string name="app_name">Camelot</string>
+  <string name="app_name">TigerAware</string>
+  <string name="login_username">username</string>
+  <string name="login_password">password</string>
+  <string name="login_login">Login</string>
+  <string name="login_sign_up">Create Account</string>
+  <string name="auth_failed">Login Failed!</string>
+  <string name="title_activity_main">MainActivity</string>
+  <string name="title_activity_sign_in">SignInActivity</string>
+  <string name="sign_in_username">username</string>
+  <string name="sign_in_email">email</string>
+  <string name="sign_in_password">password</string>
+  <string name="sign_in_create">Create</string>
+  <string name="empty_username_password_prompt">Please Enter Username and Password!</string>
+  <string name="sign_up_fail">Sign Up Failed!</string>
+  <string name="sign_up_success">Sign Up Success!</string>
+  <string name="surveys_tab_text">Surveys</string>
+  <string name="user_surveys_tab_text">User Surveys</string>
+  <string name="user_surveys_title_bar_text">Your Surveys</string>
+  <string name="user_surveys_title_bar_left_button">Sign Out</string>
+  <string name="user_surveys_title_bar_right_button">New</string>
+  <string name="survey">Survey</string>
+  <string name="survey0">Survey0</string>
+  <string name="survey1">Survey1</string>
+  <string name="survey2">Survey2</string>
+  <string name="survey3">Survey3</string>
+  <string name="survey4">Survey4</string>
+  <string name="survey5">Survey5</string>
+  <string name="survey6">Survey6</string>
+  <string name="survey_detail_title_bar_text">Survey Detail</string>
+  <string name="survey_detail_left_button">Cancel</string>
+  <string name="survey_detail_right_button">Save</string>
+  <string name="survey_name">Survey Name</string>
+  <string name="add_a_question">Add a Question</string>
+  <string name="question_detail_left_button">Cancel</string>
+  <string name="question_detail_title_bar_text">Question Detail</string>
+  <string name="question_label">Question Label</string>
+  <string name="save_question">Save Question</string>
+  <string name="please_enter_question_title">Please Enter Question Title</string>
+  <string name="please_enter_intro_text">Please Enter Intro Text</string>
+  <!--String array for question type spinner in Question Detail Activity-->
+  <string-array name="questionTypes">
+    <item>Yes or No</item>
+    <item>Intro Text</item>
+    <item>Text Field</item>
+    <item>Image Capture</item>
+    <item>Conditional</item>
+    <item>Time Interval</item>
+    <item>Date Time</item>
+    <item>Multiple Choice</item>
+    <item>Scale</item>
+  </string-array>
 </resources>

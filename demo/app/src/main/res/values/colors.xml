@@ -3,4 +3,17 @@
   <color name="colorPrimary">#3F51B5</color>
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorAccent">#FF4081</color>
+
+  <color name="colorTitleBar">#565656</color>
+  <color name="colorBottomBar">#565656</color>
+  <color name="colorTransparent">#0000</color>
+  <!--Default tiger yellow color-->
+  <color name="colorNormalText">#F7C744</color>
+  <!--Color for tab bar emements when not selected-->
+  <color name="colorTabNormal">#929292</color>
+
+
+
+  <!--The following colors are from research stack, BackboneExample App-->
+  <color name="dark_gray">#cccccc</color>
 </resources>
