@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#616161"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/HeadingTextView"
+        android:layout_marginTop="30dp"
+        android:text="Welcome" />
+    <!--Username EditText-->
+    <EditText
+        android:id="@+id/usernameEditText"
+        style="@style/BaseEditText"
+        android:layout_marginTop="100dp"
+        android:hint="@string/login_username"
+        android:inputType="text" />
+    <!--Email EditText-->
+    <!--先放到这里，这个东西暂时没用-->
+    <EditText
+        android:id="@+id/emailEditText"
+        style="@style/BaseEditText"
+        android:layout_marginTop="15dp"
+        android:hint="@string/sign_in_email"
+        android:visibility="gone"
+        android:inputType="text" />
+    <!--Password EditText-->
+    <EditText
+        android:id="@+id/passwordEditText"
+        style="@style/BaseEditText"
+        android:layout_marginTop="15dp"
+        android:hint="@string/sign_in_password"
+        android:inputType="textPassword" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+        <!--Create Account Button-->
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="30dp"
+            android:text="@string/sign_in_create" />
+
+    </LinearLayout>
+
+</LinearLayout>

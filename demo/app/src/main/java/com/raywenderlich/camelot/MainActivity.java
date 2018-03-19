@@ -64,6 +64,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
   private String[] mPermissions = {RECORD_AUDIO};
   private List<Step> surveySteps;
   private String userName = "Test";
+  private int numberOfQuestion;
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+//
+//    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//    startActivity(intent);
+
 
     Button consentButton = (Button)findViewById(R.id.consentButton);
 
@@ -150,21 +156,21 @@ public class MainActivity extends AppCompatActivity {
 
 
   private void displayConsent() {
-// 1
-    ConsentDocument document = createConsentDocument();
-
-// 2
-    List<Step> steps = createConsentSteps(document);
-
-// 3
-    Task consentTask = new OrderedTask("consent_task", steps);
+//// 1
+//    ConsentDocument document = createConsentDocument();
+//
+//// 2
+//    List<Step> steps = createConsentSteps(document);
+//
+//// 3
+//    Task consentTask = new OrderedTask("consent_task", steps);
 
 // 4
-    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
-    startActivityForResult(intent, REQUEST_CONSENT);
+//    Intent intent = ViewTaskActivity.newIntent(this, consentTask);
+//    startActivityForResult(intent, REQUEST_CONSENT);
+      surveySteps = new ArrayList<>();
+      getNumberOfQuestion();
 
-//    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//    startActivity(intent);
   }
 
   private void displaySurvey() {
@@ -433,9 +439,7 @@ public class MainActivity extends AppCompatActivity {
         addr += userName + "-" + new Date().toString();
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(addr);
-
-        myRef = database.getReference(addr+"/userName");
+        DatabaseReference myRef = database.getReference(addr+"/userName");
         myRef.setValue(userName);
 
         int i = 0;
@@ -446,10 +450,76 @@ public class MainActivity extends AppCompatActivity {
             myRef.setValue(id);
 
             StepResult stepResult = taskResult.getStepResult(id);
+
             myRef = database.getReference(addr+"/answer/"+Integer.toString(i)+"/answer");
 
             myRef.setValue(stepResult.getResult().toString());
             i++;
+        }
+    }
+
+    public void getNumberOfQuestion(){
+
+        numberOfQuestion = 2;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        String path = "survey/";
+
+        DatabaseReference myRef = database.getReference(path);
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+            int number = (int) dataSnapshot.getChildrenCount();
+                randomGenerate(number);
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+
+        });
+    }
+
+    private void randomGenerate(int number) {
+
+        if (number >= numberOfQuestion) {
+
+            int[] result = new int[numberOfQuestion];
+            int count = 0;
+            while (count < numberOfQuestion) {
+                int num = (int) (Math.random() * number);
+                boolean flag = true;
+                for (int j = 0; j < numberOfQuestion; j++) {
+                    if (num == result[j]) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    result[count] = num;
+                    count++;
+                }
+            }
+
+
+            for (int t = 0; t < numberOfQuestion; t++) {
+
+                if (t == numberOfQuestion - 1) {
+                    survey(result[t], true);
+                } else {
+                    survey(result[t]);
+                }
+
+
+
+
+            }
+        }
+        else{
+            System.out.println("No enough question");
         }
     }
 

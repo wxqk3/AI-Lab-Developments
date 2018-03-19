@@ -16,6 +16,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Arrays;
+
 
 /**
  * Created by kanbudong on 2/24/18.
@@ -94,7 +96,7 @@ public class LoginActivity extends CloseKeyboardActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    startMainActivity();
+                    finish();
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -141,6 +143,8 @@ public class LoginActivity extends CloseKeyboardActivity {
     private View.OnClickListener signInButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+            startActivity(intent);
         }
     };
 
